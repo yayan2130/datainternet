@@ -13,12 +13,12 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-export default function Dashboard() {
+export default function Dashboard({ user }) {
   const theme = useTheme();
 
   const usageData = [
-    { name: "Used", value: 73.4 },
-    { name: "Remaining", value: 26.6 },
+    { name: "Kuota Terpakai", value: user.quota.used },
+    { name: "Sisa Kuota", value: user.quota.total - user.quota.used },
   ];
   const COLORS = ["#1976d2", "#e0e0e0"];
 
@@ -57,13 +57,13 @@ export default function Dashboard() {
               <Box
                 sx={{
                   width: "100%",
-                  height: 180,
+                  height: 200,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <ResponsiveContainer width="60%" height="100%">
+                <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={usageData}
@@ -83,7 +83,9 @@ export default function Dashboard() {
                 </ResponsiveContainer>
                 <Box sx={{ position: "absolute", textAlign: "center" }}>
                   <Typography variant="h6" fontWeight={600}>
-                    73%
+                    {`${Math.round(
+                      (user.quota.used / user.quota.total) * 100
+                    )}%`}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     Terpakai
@@ -96,7 +98,8 @@ export default function Dashboard() {
                 color="text.secondary"
                 textAlign="center"
               >
-                73.4 GB / 100 GB (Reset: 1 Des 2025)
+                {user.quota.used} / {user.quota.total} GB (Reset:{" "}
+                {user.nextBilling})
               </Typography>
             </CardContent>
           </Card>
@@ -108,7 +111,7 @@ export default function Dashboard() {
             <CardContent>
               <Box display="flex" alignItems="center" gap={2} mb={1}>
                 <WifiIcon
-                  color="success"
+                  color={user.status == "Aktif" ? "success" : "warning"}
                   sx={{
                     fontSize: 36,
                     bgcolor: "#e8f5e9",
@@ -120,9 +123,11 @@ export default function Dashboard() {
                   <Typography
                     variant="h6"
                     fontWeight={600}
-                    color="success.main"
+                    color={
+                      user.status == "Aktif" ? "success.main" : "warning.main"
+                    }
                   >
-                    Koneksi Aktif
+                    Koneksi {user.status}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Terakhir dicek: 2 menit lalu
@@ -156,10 +161,18 @@ export default function Dashboard() {
                 />
                 <Box>
                   <Typography variant="h6" fontWeight={600}>
-                    Rp150.000
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                    }).format(user.lastBill.amount)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Jatuh Tempo: 25 Nov 2025
+                    Jatuh Tempo:{" "}
+                    {new Intl.DateTimeFormat("id-ID", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    }).format(new Date(user.lastBill.dueDate))}
                   </Typography>
                 </Box>
               </Box>
@@ -197,13 +210,18 @@ export default function Dashboard() {
                 </Typography>
               </Box>
               <Typography variant="body1" fontWeight={500}>
-                Premium Plus
+                {user.package}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Kecepatan: 20 Mbps / 10 Mbps
+                Kecepatan: {user.speed}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Perpanjangan berikutnya: 25 Nov 2025
+                Perpanjangan berikutnya:
+                {new Intl.DateTimeFormat("id-ID", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                }).format(new Date(user.lastBill.dueDate))}
               </Typography>
               <Button
                 variant="outlined"

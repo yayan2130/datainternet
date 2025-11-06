@@ -1,34 +1,75 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import History from "./pages/History";
 import Sidebar from "./components/SideBar";
 import Topbar from "./components/TopBar";
 import { Box, useTheme, useMediaQuery } from "@mui/material";
+import { useState, useEffect } from "react";
 
 export default function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) setUser(JSON.parse(savedUser));
+  }, []);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    navigate("/");
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const isLogin = !!user;
+
   return (
     <Box sx={{ display: "flex" }}>
-      <Sidebar />
-      <Topbar />
+      {isLogin && <Sidebar />}
+      {isLogin && <Topbar onLogout={handleLogout} user={user} />}
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          mt: 8,
-          ml: isMobile ? "10px" : "210px", // 👉 hilangkan margin kiri di HP
+          mt: isLogin ? 8 : 0,
+          ml: isLogin ? (isMobile ? "0" : "240px") : 0,
           backgroundColor: "background.default",
           minHeight: "100vh",
         }}
       >
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route
-            path="/histori"
-            element={<div>📜 Halaman Histori Pembelian</div>}
+            path="/"
+            element={
+              isLogin ? (
+                <Dashboard user={user} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
           />
-          <Route path="/beli" element={<div>💳 Halaman Beli Paket</div>} />
+          <Route
+            path="/history"
+            element={
+              isLogin ? (
+                <History user={user} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
         </Routes>
       </Box>
     </Box>

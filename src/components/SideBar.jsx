@@ -28,8 +28,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-    { text: "Histori Pembelian", icon: <AccessTimeIcon />, path: "/histori" },
-    { text: "Beli Paket", icon: <ShoppingCartIcon />, path: "/beli-paket" },
+    { text: "Histori Pembayaran", icon: <AccessTimeIcon />, path: "/history" },
   ];
   const drawerContent = (
     <Box sx={{ width: 240 }}>
