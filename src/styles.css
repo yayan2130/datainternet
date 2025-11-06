@@ -1,0 +1,8 @@
+body{
+background: #f5f7fb;
+}
+
+/* small responsive tweaks */
+@media (max-width:600px){
+.MuiContainer-root{padding-left:12px; padding-right:12px}
+}
