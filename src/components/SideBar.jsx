@@ -27,8 +27,9 @@ export default function Sidebar() {
   const toggleDrawer = (state) => () => setOpen(state);
 
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     { text: "Histori Pembayaran", icon: <AccessTimeIcon />, path: "/history" },
+    { text: "Beli Paket", icon: <ShoppingCartIcon />, path: "/purchase" },
   ];
   const drawerContent = (
     <Box sx={{ width: 240 }}>

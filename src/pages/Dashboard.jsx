@@ -4,7 +4,10 @@ import {
   Typography,
   Button,
   Box,
-  useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import WifiIcon from "@mui/icons-material/Wifi";
@@ -12,15 +15,44 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import BoltIcon from "@mui/icons-material/Bolt";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const currency = (value) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(value);
 
 export default function Dashboard({ user }) {
-  const theme = useTheme();
+  const navigate = useNavigate();
 
+  const [quotaData, setQuotaData] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // 🔹 Ambil data paket aktif user
+  useEffect(() => {
+    if (!user?.packageId) return;
+    fetch(`http://localhost:3000/quotas/${user.packageId}`)
+      .then((res) => res.json())
+      .then(setQuotaData)
+      .catch(() => setQuotaData(null));
+  }, [user]);
+
+  // 🔹 Data kuota untuk chart
   const usageData = [
-    { name: "Kuota Terpakai", value: user.quota.used },
-    { name: "Sisa Kuota", value: user.quota.total - user.quota.used },
+    { name: "Kuota Terpakai", value: user?.quota?.used || 0 },
+    {
+      name: "Sisa Kuota",
+      value: (user?.quota?.total || 0) - (user?.quota?.used || 0),
+    },
   ];
   const COLORS = ["#1976d2", "#e0e0e0"];
+
+  const handleBuy = () => {
+    if (!quotaData) return;
+    navigate("/payment", { state: { selectedPackage: quotaData } });
+  };
 
   return (
     <Box
@@ -35,9 +67,9 @@ export default function Dashboard({ user }) {
       </Typography>
 
       <Grid container spacing={3}>
-        {/* Penggunaan Data */}
-        <Grid item xs={12} md={12} lg={12}>
-          <Card sx={{ borderRadius: 3, height: "100%" }}>
+        {/* 🔹 Penggunaan Data */}
+        <Grid item xs={12}>
+          <Card sx={{ borderRadius: 3 }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2} mb={1}>
                 <DataUsageIcon
@@ -54,34 +86,34 @@ export default function Dashboard({ user }) {
                 </Typography>
               </Box>
 
-              <Box
-                sx={{
-                  width: "100%",
-                  height: 200,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <Box sx={{ width: "100%", height: 200, position: "relative" }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={usageData}
                       innerRadius={60}
                       outerRadius={80}
-                      paddingAngle={3}
                       dataKey="value"
                     >
-                      {usageData.map((entry, index) => (
+                      {usageData.map((_, index) => (
                         <Cell
-                          key={`cell-${index}`}
+                          key={index}
                           fill={COLORS[index % COLORS.length]}
                         />
                       ))}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <Box sx={{ position: "absolute", textAlign: "center" }}>
+
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "45%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center",
+                  }}
+                >
                   <Typography variant="h6" fontWeight={600}>
                     {`${Math.round(
                       (user.quota.used / user.quota.total) * 100
@@ -98,20 +130,19 @@ export default function Dashboard({ user }) {
                 color="text.secondary"
                 textAlign="center"
               >
-                {user.quota.used} / {user.quota.total} GB (Reset:{" "}
-                {user.nextBilling})
+                {user.quota.used} / {user.quota.total} GB (Berlaku hingga: )
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Status Koneksi */}
-        <Grid item xs={12} md={4} lg={4}>
-          <Card sx={{ borderRadius: 3, height: "100%" }}>
+        {/* 🔹 Status Koneksi */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ borderRadius: 3 }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2} mb={1}>
                 <WifiIcon
-                  color={user.status == "Aktif" ? "success" : "warning"}
+                  color={user.status === "Aktif" ? "success" : "warning"}
                   sx={{
                     fontSize: 36,
                     bgcolor: "#e8f5e9",
@@ -124,7 +155,7 @@ export default function Dashboard({ user }) {
                     variant="h6"
                     fontWeight={600}
                     color={
-                      user.status == "Aktif" ? "success.main" : "warning.main"
+                      user.status === "Aktif" ? "success.main" : "warning.main"
                     }
                   >
                     Koneksi {user.status}
@@ -145,9 +176,9 @@ export default function Dashboard({ user }) {
           </Card>
         </Grid>
 
-        {/* Ringkasan Tagihan */}
-        <Grid item xs={12} md={4} lg={4}>
-          <Card sx={{ borderRadius: 3, height: "100%" }}>
+        {/* 🔹 Ringkasan Paket */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ borderRadius: 3 }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2} mb={1}>
                 <PaymentIcon
@@ -161,74 +192,25 @@ export default function Dashboard({ user }) {
                 />
                 <Box>
                   <Typography variant="h6" fontWeight={600}>
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    }).format(user.lastBill.amount)}
+                    {quotaData ? quotaData.name : "Belum Ada Paket"}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Jatuh Tempo:{" "}
-                    {new Intl.DateTimeFormat("id-ID", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    }).format(new Date(user.lastBill.dueDate))}
+                    {quotaData
+                      ? `Harga: ${currency(quotaData.price)} / ${
+                          quotaData.validityDays
+                        } Hari`
+                      : "Silakan pilih paket terlebih dahulu"}
                   </Typography>
                 </Box>
               </Box>
-              <Typography
-                variant="body2"
-                color="success.main"
-                fontWeight={600}
-                sx={{ mb: 1 }}
-              >
-                ✅ Lunas
-              </Typography>
-              <Button variant="outlined" size="small" sx={{ borderRadius: 2 }}>
-                Lihat Riwayat Tagihan
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
 
-        {/* Detail Paket Saya */}
-        <Grid item xs={12} md={4} lg={4} sx={{ height: "100%" }}>
-          <Card sx={{ borderRadius: 3 }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" gap={2} mb={1}>
-                <BoltIcon
-                  color="warning"
-                  sx={{
-                    fontSize: 36,
-                    bgcolor: "#fff8e1",
-                    p: 1,
-                    borderRadius: 2,
-                  }}
-                />
-                <Typography variant="h6" fontWeight={600}>
-                  Paket Saya
-                </Typography>
-              </Box>
-              <Typography variant="body1" fontWeight={500}>
-                {user.package}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Kecepatan: {user.speed}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Perpanjangan berikutnya:
-                {new Intl.DateTimeFormat("id-ID", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                }).format(new Date(user.lastBill.dueDate))}
-              </Typography>
               <Button
-                variant="outlined"
+                variant="contained"
                 size="small"
-                sx={{ mt: 1, borderRadius: 2 }}
+                sx={{ borderRadius: 2 }}
+                onClick={handleBuy}
               >
-                Upgrade Paket
+                {quotaData ? "Beli Lagi / Perpanjang Paket" : "Pilih Paket"}
               </Button>
             </CardContent>
           </Card>

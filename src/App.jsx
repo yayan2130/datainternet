@@ -2,6 +2,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import History from "./pages/History";
+import Purchase from "./pages/Purchase";
+import Payment from "./pages/Payment";
 import Sidebar from "./components/SideBar";
 import Topbar from "./components/TopBar";
 import { Box, useTheme, useMediaQuery } from "@mui/material";
@@ -61,6 +63,16 @@ export default function App() {
             }
           />
           <Route
+            path="/dashboard"
+            element={
+              isLogin ? (
+                <Dashboard user={user} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
             path="/history"
             element={
               isLogin ? (
@@ -70,6 +82,23 @@ export default function App() {
               )
             }
           />
+          <Route
+            path="/purchase"
+            element={
+              isLogin ? (
+                <Purchase user={user} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route path="/payment" element={
+              isLogin ? (
+                <Payment user={user} />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            } />
         </Routes>
       </Box>
     </Box>

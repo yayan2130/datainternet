@@ -59,6 +59,8 @@ export default function HistoryPembayaran() {
     fetchPayments();
   }, []);
 
+  
+
   const openDetail = (payment) => {
     setSelected(payment);
     setDialogOpen(true);
@@ -67,14 +69,6 @@ export default function HistoryPembayaran() {
   const closeDetail = () => {
     setDialogOpen(false);
     setSelected(null);
-  };
-
-  // small helper for status -> chip props
-  const statusProps = (status) => {
-    const s = String(status || "").toLowerCase();
-    if (s == "lunas") return { label: "Lunas", color: "success" };
-    if (s == "belum lunas") return { label: "Belum Lunas", color: "warning" };
-    return { label: status || "Unknown", color: "default" };
   };
 
   return (
@@ -111,7 +105,6 @@ export default function HistoryPembayaran() {
         <>
           <Grid container spacing={2}>
             {payments.map((p) => {
-              const chip = statusProps(p.status);
               return (
                 <Grid item key={p.id} xs={12} md={6}>
                   <Card sx={{ borderRadius: 2, boxShadow: 2 }}>
@@ -126,17 +119,28 @@ export default function HistoryPembayaran() {
                       >
                         <Box>
                           <Typography variant="subtitle1" fontWeight={600}>
-                            {p.period || `Periode ${p.id}`}
+                            {p.invoiceId}
                           </Typography>
                           <Typography
                             variant="body2"
                             color="text.secondary"
                             sx={{ mt: 0.5 }}
                           >
-                            Jatuh Tempo:{" "}
-                            {p.dueDate
-                              ? new Date(p.dueDate).toLocaleDateString()
+                            Expiry Date:{" "}
+                            {p.expiryDate
+                              ? new Intl.DateTimeFormat("id-ID", {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                }).format(new Date(p.expiryDate))
                               : "-"}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                          >
+                            Validity Days: {p.validityDays} Days
                           </Typography>
                         </Box>
 
@@ -144,12 +148,6 @@ export default function HistoryPembayaran() {
                           <Typography variant="h6" fontWeight={700}>
                             {currency(p.amount)}
                           </Typography>
-                          <Chip
-                            label={chip.label}
-                            color={chip.color}
-                            size="small"
-                            sx={{ mt: 1 }}
-                          />
                         </Box>
                       </Box>
 
@@ -195,46 +193,42 @@ export default function HistoryPembayaran() {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="subtitle2">Jumlah</Typography>
+                <Typography variant="subtitle2">Price</Typography>
                 <Typography variant="body2">
                   {currency(selected.amount)}
                 </Typography>
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="subtitle2">Periode</Typography>
-                <Typography variant="body2">
-                  {selected.period || "-"}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="subtitle2">Jatuh Tempo</Typography>
-                <Typography variant="body2">
-                  {selected.dueDate
-                    ? new Date(selected.dueDate).toLocaleDateString()
-                    : "-"}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="subtitle2">Tanggal Pembayaran</Typography>
                 <Typography variant="body2">
-                  {selected.paymentDate
-                    ? new Date(selected.paymentDate).toLocaleDateString()
+                  {selected.purchaseDate
+                    ? new Intl.DateTimeFormat("en-GB", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }).format(new Date(selected.purchaseDate))
                     : "-"}
                 </Typography>
               </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="subtitle2">Status</Typography>
-                <Chip {...statusProps(selected.status)} size="small" />
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="subtitle2">Expiry Date</Typography>
+                <Typography variant="body2">
+                  {selected.expiryDate
+                    ? new Intl.DateTimeFormat("en-GB", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }).format(new Date(selected.expiryDate))
+                    : "-"}
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="subtitle2">Price</Typography>
+                <Typography variant="body2">
+                  {selected.validityDays} Days
+                </Typography>
               </Box>
             </Box>
           )}

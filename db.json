@@ -1,88 +1,70 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "andi@example.com",
       "password": "12345",
       "name": "Andi Pratama",
-      "package": "Premium Plus",
-      "speed": "20 Mbps",
-      "quota": {
-        "used": 81.1,
-        "total": 150
-      },
+      "packageId": 2,
       "status": "Aktif",
-      "nextBilling": "2025-12-01",
-      "lastBill": {
-        "amount": 250000,
-        "dueDate": "2025-11-10",
-        "paid": true
+      "quota": {
+        "used": 0,
+        "total": 0
       }
     },
     {
-      "id": 2,
+      "id": "2",
       "email": "budi@example.com",
       "password": "abcd",
       "name": "Budi Santoso",
-      "package": "Basic",
-      "speed": "10 Mbps",
-      "quota": {
-        "used": 30,
-        "total": 50
-      },
+      "packageId": 1,
       "status": "Gangguan",
-      "nextBilling": "2025-11-28",
-      "lastBill": {
-        "amount": 150000,
-        "dueDate": "2025-11-05",
-        "paid": false
+      "quota": {
+        "used": 0,
+        "total": 0
       }
+    },
+    {
+      "id": "3",
+      "email": "cici@example.com",
+      "password": "12345",
+      "name": "Cici Cahyani",
+      "packageId": 1,
+      "status": "Aktif",
+      "quota": {
+        "used": 0,
+        "total": 100
+      }
+    }
+  ],
+  "quotas": [
+    {
+      "id": "1",
+      "name": "Basic",
+      "speed": "10 Mbps",
+      "quota": 100,
+      "price": 150000,
+      "validityDays": 30
+    },
+    {
+      "id": "2",
+      "name": "Premium Plus",
+      "speed": "20 Mbps",
+      "quota": 200,
+      "price": 250000,
+      "validityDays": 60
     }
   ],
   "payments": [
     {
-      "id": 1,
-      "userId": 1,
+      "id": "e301",
+      "userId": 3,
+      "packageId": 1,
       "amount": 150000,
-      "period": "September 2025",
-      "dueDate": "2025-09-10",
-      "status": "Lunas",
-      "package": "Premium Plus",
-      "paymentDate": "2025-09-09",
-      "invoiceId": "INV-20250909-001"
-    },
-    {
-      "id": 2,
-      "userId": 1,
-      "amount": 150000,
-      "period": "Oktober 2025",
-      "dueDate": "2025-10-10",
-      "status": "Belum Lunas",
-      "package": "Premium Plus",
-      "paymentDate": null,
-      "invoiceId": "INV-20251010-002"
-    },
-    {
-      "id": 3,
-      "userId": 2,
-      "amount": 200000,
-      "period": "September 2025",
-      "dueDate": "2025-09-10",
-      "status": "Lunas",
-      "package": "Basic",
-      "paymentDate": "2025-09-09",
-      "invoiceId": "INV-20250909-001"
-    },
-    {
-      "id": 4,
-      "userId": 2,
-      "amount": 200000,
-      "period": "Oktober 2025",
-      "dueDate": "2025-10-10",
-      "status": "Belum Lunas",
-      "package": "Basic",
-      "paymentDate": null,
-      "invoiceId": "INV-20251009-003"
+      "purchaseDate": "2025-11-07",
+      "expiryDate": "2025-12-07",
+      "validityDays": 30,
+      "invoiceId": "INV-20251107-051"
     }
   ]
 }
