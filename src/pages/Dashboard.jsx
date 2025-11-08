@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import WifiIcon from "@mui/icons-material/Wifi";
-import PaymentIcon from "@mui/icons-material/Payment";
 import BoltIcon from "@mui/icons-material/Bolt";
 import DataUsageIcon from "@mui/icons-material/DataUsage";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -28,7 +27,6 @@ export default function Dashboard({ user }) {
   const navigate = useNavigate();
 
   const [quotaData, setQuotaData] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   // 🔹 Ambil data paket aktif user
   useEffect(() => {
@@ -37,6 +35,16 @@ export default function Dashboard({ user }) {
       .then((res) => res.json())
       .then(setQuotaData)
       .catch(() => setQuotaData(null));
+  }, [user]);
+
+  const [latestPayment, setLatestPayment] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    fetch(`http://localhost:3000/payments/${user.id}`)
+      .then((res) => res.json())
+      .then(setLatestPayment)
+      .catch(() => setLatestPayment(null));
   }, [user]);
 
   // 🔹 Data kuota untuk chart
@@ -48,11 +56,6 @@ export default function Dashboard({ user }) {
     },
   ];
   const COLORS = ["#1976d2", "#e0e0e0"];
-
-  const handleBuy = () => {
-    if (!quotaData) return;
-    navigate("/payment", { state: { selectedPackage: quotaData } });
-  };
 
   return (
     <Box
@@ -115,9 +118,11 @@ export default function Dashboard({ user }) {
                   }}
                 >
                   <Typography variant="h6" fontWeight={600}>
-                    {`${Math.round(
-                      (user.quota.used / user.quota.total) * 100
-                    )}%`}
+                    {user.quota.used > 0
+                      ? `${Math.round(
+                          (user.quota.used / user.quota.total) * 100
+                        )}%`
+                      : "0%"}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     Terpakai
@@ -130,7 +135,8 @@ export default function Dashboard({ user }) {
                 color="text.secondary"
                 textAlign="center"
               >
-                {user.quota.used} / {user.quota.total} GB (Berlaku hingga: )
+                {user.quota.used} / {user.quota.total} GB (Berlaku hingga:
+                {user.quota.expiryDate} )
               </Typography>
             </CardContent>
           </Card>
@@ -177,41 +183,58 @@ export default function Dashboard({ user }) {
         </Grid>
 
         {/* 🔹 Ringkasan Paket */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={4}>
           <Card sx={{ borderRadius: 3 }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2} mb={1}>
-                <PaymentIcon
-                  color="primary"
+                <BoltIcon
+                  color="warning"
                   sx={{
                     fontSize: 36,
-                    bgcolor: "#e3f2fd",
+                    bgcolor: "#fff8e1",
                     p: 1,
                     borderRadius: 2,
                   }}
                 />
-                <Box>
-                  <Typography variant="h6" fontWeight={600}>
-                    {quotaData ? quotaData.name : "Belum Ada Paket"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {quotaData
-                      ? `Harga: ${currency(quotaData.price)} / ${
-                          quotaData.validityDays
-                        } Hari`
-                      : "Silakan pilih paket terlebih dahulu"}
-                  </Typography>
-                </Box>
+                <Typography variant="h6" fontWeight={600}>
+                  Paket Aktif Saat Ini
+                </Typography>
               </Box>
 
-              <Button
-                variant="contained"
-                size="small"
-                sx={{ borderRadius: 2 }}
-                onClick={handleBuy}
-              >
-                {quotaData ? "Beli Lagi / Perpanjang Paket" : "Pilih Paket"}
-              </Button>
+              {quotaData ? (
+                <>
+                  <Typography variant="body1" fontWeight={500}>
+                    {quotaData.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Kecepatan: {quotaData.speed}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Kuota: {quotaData.quota} GB
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Harga: {currency(quotaData.price)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Masa Aktif Hingga: {user.expiryDate || "-"}
+                  </Typography>
+                </>
+              ) : (
+                <Typography color="text.secondary">
+                  Belum ada paket aktif
+                </Typography>
+              )}
+
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ borderRadius: 2, mr: 1 }}
+                  onClick={() => navigate("/purchase")}
+                >
+                  {user.packageId ? "Perbarui Paket" : "Pilih Paket"}
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </Grid>

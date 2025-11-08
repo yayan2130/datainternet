@@ -5,11 +5,12 @@
       "email": "andi@example.com",
       "password": "12345",
       "name": "Andi Pratama",
-      "packageId": 2,
+      "packageId": null,
       "status": "Aktif",
       "quota": {
         "used": 0,
-        "total": 0
+        "total": 0,
+        "expiryDate": null
       }
     },
     {
@@ -17,23 +18,25 @@
       "email": "budi@example.com",
       "password": "abcd",
       "name": "Budi Santoso",
-      "packageId": 1,
+      "packageId": null,
       "status": "Gangguan",
       "quota": {
         "used": 0,
-        "total": 0
+        "total": 0,
+        "expiryDate": null
       }
     },
     {
       "id": "3",
       "email": "cici@example.com",
       "password": "12345",
-      "name": "Cici Cahyani",
-      "packageId": 1,
+      "name": "Cici Mandala",
+      "packageId": 2,
       "status": "Aktif",
       "quota": {
         "used": 0,
-        "total": 100
+        "total": 200,
+        "expiryDate": "2025-12-08"
       }
     }
   ],
@@ -57,14 +60,14 @@
   ],
   "payments": [
     {
-      "id": "e301",
+      "id": "f174",
       "userId": 3,
-      "packageId": 1,
-      "amount": 150000,
-      "purchaseDate": "2025-11-07",
-      "expiryDate": "2025-12-07",
-      "validityDays": 30,
-      "invoiceId": "INV-20251107-051"
+      "packageId": 2,
+      "amount": 250000,
+      "purchaseDate": "2025-11-08",
+      "expiryDate": "2025-12-08",
+      "validityDays": 60,
+      "invoiceId": "INV-20251108-096"
     }
   ]
 }

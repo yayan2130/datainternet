@@ -34,9 +34,6 @@ export default function Topbar({ onLogout, user }) {
           Hello, {user.name}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <IconButton>
-            <NotificationsIcon />
-          </IconButton>
           <IconButton onClick={handleMenuOpen}>
             <Avatar alt="User" src="/avatar.png" />
           </IconButton>

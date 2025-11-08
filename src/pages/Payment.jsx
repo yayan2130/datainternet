@@ -71,15 +71,22 @@ export default function Payment({ user }) {
         ...user,
         quota: {
           ...user.quota,
-          total: user.quota.total + Number(selectedPackage.quota),
+          used: 0,
+          total: Number(selectedPackage.quota),
+          expiryDate: expiry,
         },
+        packageId: Number(selectedPackage.id),
       };
 
       const res2 = await fetch(`http://localhost:3000/users/${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          quota: updatedUser.quota,
+          quota: {
+            used: 0,
+            total: Number(selectedPackage.quota),
+            expiryDate: expiry,
+          },
           packageId: Number(selectedPackage.id),
         }),
       });
