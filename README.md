@@ -1,16 +1,33 @@
-# React + Vite
+# Data Internet
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Persiapan lingkungan
 
-Currently, two official plugins are available:
+Sebelum menjalankan, pastikan Anda memiliki:
+- Node.js & npm (atau pnpm) terinstal di sistem Anda.
+- Git untuk clone repo.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Cara menjalankan project ini
 
-## React Compiler
+Berikut langkah-menjalankan untuk frontend di repo ini:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Clone repository:
+git clone https://github.com/yayan2130/datainternet.git
+cd datainternet
 
-## Expanding the ESLint configuration
+2. Install dependencies:
+Karena ada file pnpm-lock.yaml, bisa menggunakan pnpm:
+pnpm install
+install json-server:
+npm install -g json-server
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Jalankan server frontend:
+pnpm run dev
+atau jika npm:
+npm run dev
+
+4. Jalankan json-server
+json-server --watch db.json
+
+Ini akan menjalankan Vite dev server dan Anda bisa buka di browser (biasanya http://localhost:5173 atau sebagainya).
+backend akan berjalan di http://localhost:3000
+========================================================================================================================================================================
